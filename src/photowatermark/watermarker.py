@@ -70,10 +70,14 @@ def apply_watermark(src: Path, dest: Path, cfg: WatermarkConfig, font_path: str 
         draw.text((x, y), text, font=font, fill=fill_rgba, stroke_width=cfg.stroke_width, stroke_fill=stroke_fill)
 
         combined = Image.alpha_composite(im, txt_layer)
-        # 输出使用原格式（若支持）
-        out_format = im.format or 'PNG'
-        if out_format.upper() == 'JPEG':  # 去除 alpha
+        # 根据目标文件扩展名决定输出格式
+        suffix = dest.suffix.lower()
+        if suffix in {'.jpg', '.jpeg'}:
+            # JPEG 不支持 alpha 通道
             combined = combined.convert('RGB')
-        combined.save(dest, quality=95)
+            combined.save(dest, format='JPEG', quality=95)
+        else:
+            # 其它格式保留 alpha
+            combined.save(dest)
 
 __all__ = ["apply_watermark"]
