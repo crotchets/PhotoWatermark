@@ -75,11 +75,17 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     for img_path in tqdm(scan_res.images, desc="处理", unit="张"):
         exif_res = extract_date(img_path)
-        if not exif_res.date_text:
-            # 跳过无日期图片：可以扩展为使用文件修改时间
-            continue
+        date_text = exif_res.date_text
+        if not date_text:
+            # 回退：使用文件修改时间（本地时区）
+            try:
+                ts = img_path.stat().st_mtime
+                from datetime import datetime
+                date_text = datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+            except Exception:
+                continue  # 仍无法获取则跳过
         cfg = WatermarkConfig(
-            text=exif_res.date_text,
+            text=date_text,
             font_size=args.font_size,
             color=args.color,
             opacity=args.opacity,
