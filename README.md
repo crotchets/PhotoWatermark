@@ -15,25 +15,28 @@ pip install -r requirements.txt
 ```
 
 ## 命令行使用
+项目根目录提供了入口脚本 `photowatermark.py`，推荐直接使用：
 ```bash
-python -m photowatermark.cli \
-	--input ./photos \
-	--font-size 48 \
-	--color 255,255,255 \
-	--position bottom-right \
-	--opacity 80 \
-	--stroke-width 2 \
-	--stroke-color 0,0,0
+python photowatermark.py --input ./photos --font-size 48 --color 255,255,255 --position bottom-right --opacity 80 --stroke-width 2 --stroke-color 0,0,0
+```
+
+或者（若想直接调用包结构）设置 `PYTHONPATH` 后执行：
+```bash
+set PYTHONPATH=.\src & python -m photowatermark.cli -i ./photos --font-size 48 --position bottom-right
+```
+PowerShell:
+```powershell
+$env:PYTHONPATH="$(Get-Location)\src"; python -m photowatermark.cli -i ./photos
 ```
 
 Dry-run 查看扫描结果：
 ```bash
-python -m photowatermark.cli -i ./photos --dry-run
+python photowatermark.py -i ./photos --dry-run
 ```
 
 递归处理子目录：
 ```bash
-python -m photowatermark.cli -i ./photos --recursive
+python photowatermark.py -i ./photos --recursive
 ```
 
 ## Python 编程方式示例
