@@ -37,7 +37,7 @@ python -m photowatermark.cli -i ./photos --recursive
 ```
 
 ## Python 编程方式示例
-见 `examples/quick_start.py`，或直接：
+直接在项目根目录：
 ```python
 from photowatermark.scanner import scan_directory
 from photowatermark.exif_reader import extract_date
@@ -47,12 +47,15 @@ from photowatermark.watermarker import apply_watermark
 scan_res = scan_directory('./photos')
 out_dir = scan_res.root / f"{scan_res.root.name}_watermark"
 for img in scan_res.images:
-		exif_res = extract_date(img)
-		if not exif_res.date_text:
-				continue
-		cfg = WatermarkConfig(text=exif_res.date_text, position='bottom-right')
-		dest = out_dir / img.relative_to(scan_res.root)
-		apply_watermark(img, dest, cfg)
+	exif_res = extract_date(img)
+	date_text = exif_res.date_text
+	if not date_text:
+		# 回退：文件修改时间
+		from datetime import datetime
+		date_text = datetime.fromtimestamp(img.stat().st_mtime).strftime('%Y-%m-%d')
+	cfg = WatermarkConfig(text=date_text, position='bottom-right')
+	dest = out_dir / img.relative_to(scan_res.root)
+	apply_watermark(img, dest, cfg)
 print('done')
 ```
 
@@ -68,7 +71,8 @@ pytest -q
 ```
 src/photowatermark/        # 核心代码
 tests/                     # 单元测试
-examples/quick_start.py    # 快速开始示例
+examples/images/           # 示例图片目录（自备图片）
+photowatermark.py          # 运行入口 (python photowatermark.py ...)
 ```
 
 ## 已实现 PRD 2.1 核心功能
@@ -77,10 +81,13 @@ examples/quick_start.py    # 快速开始示例
 - 水印配置
 - 水印绘制与保存
 
+## 回退逻辑说明
+当图片缺少 EXIF 拍摄时间时，自动使用文件修改时间（本地时间）作为水印日期。
+
 ## 后续可扩展
-- 无 EXIF 时回退文件时间
-- 处理统计与日志
-- GUI 界面 / Web 界面
+- 增加统计：EXIF 成功/文件时间回退数量
+- 增加日志输出 / JSON 报告
+- GUI / Web 界面
 
 ---
 MIT License
