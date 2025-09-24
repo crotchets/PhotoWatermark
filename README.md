@@ -30,13 +30,13 @@ pip install -e .  # 若根目录后续补充 pyproject.toml/setup.cfg 可使用
 ### 方式 A：便捷入口脚本（无需设置 PYTHONPATH）
 ```bash
 python photowatermark.py \
-	--input ./photos \
-	--font-size 48 \
-	--color 255,255,255 \
-	--position bottom-right \
-	--opacity 80 \
-	--stroke-width 2 \
-	--stroke-color 0,0,0
+  --input examples/images \
+  --font-size 48 \
+  --color 255,255,255 \
+  --position bottom-right \
+  --opacity 80 \
+  --stroke-width 2 \
+  --stroke-color 0,0,0
 ```
 
 ### 方式 B：手动添加 src 到路径后用模块形式
